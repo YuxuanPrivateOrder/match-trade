@@ -1,5 +1,6 @@
 package com.yuxuan66.ecmc.modules.system.service;
 
+import cn.hutool.core.lang.Assert;
 import cn.hutool.crypto.asymmetric.KeyType;
 import cn.hutool.crypto.asymmetric.RSA;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -15,6 +16,7 @@ import com.yuxuan66.ecmc.modules.system.entity.UsersRoles;
 import com.yuxuan66.ecmc.modules.system.entity.consts.UserStatus;
 import com.yuxuan66.ecmc.modules.system.entity.dto.LoginDto;
 import com.yuxuan66.ecmc.modules.system.entity.dto.SmsLoginDto;
+import com.yuxuan66.ecmc.modules.system.entity.dto.UpdatePasswordDto;
 import com.yuxuan66.ecmc.modules.system.entity.dto.UserInfoDto;
 import com.yuxuan66.ecmc.modules.system.entity.query.UserQuery;
 import com.yuxuan66.ecmc.modules.system.mapper.RoleMapper;
@@ -89,7 +91,7 @@ public class UserService extends BaseService<User, UserMapper> {
      */
     public String login(SmsLoginDto smsLoginDto) {
         // 判断图片验证码
-        captchaService.checkImgCaptcha(smsLoginDto.getUuid(), smsLoginDto.getImgCode());
+        captchaService.checkImgCaptcha(smsLoginDto);
         // 判断手机验证码是否正确
         String code = redisKit.getAndDel(CacheKey.CAPTCHA_PHONE_LOGIN_PRE + smsLoginDto.getPhone());
         if (!code.equals(smsLoginDto.getCode())) {
@@ -195,7 +197,23 @@ public class UserService extends BaseService<User, UserMapper> {
      */
     public void del(Set<Long>ids){
         usersRolesMapper.delete(new QueryWrapper<UsersRoles>().in("user_id",ids));
+        // TODO 移除用户关联的角色等信息
         removeBatchByIds(ids);
+    }
+
+    /**
+     * 重置密码
+     */
+    public void retrievePassword(UpdatePasswordDto updatePasswordDto){
+        // 校验图形验证码
+        captchaService.checkImgCaptcha(updatePasswordDto);
+        // 校验手机验证码
+        captchaService.checkSmsCode(updatePasswordDto);
+        // 修改用户密码
+        User user = query().eq("phone", updatePasswordDto.getPhone()).one();
+        Assert.notNull(user,()->BizException.of("当前手机号尚未注册用户"));
+        user.setPassword(PasswordUtil.createHash(updatePasswordDto.getNewPassword()));
+        user.updateById();
     }
 
     /**

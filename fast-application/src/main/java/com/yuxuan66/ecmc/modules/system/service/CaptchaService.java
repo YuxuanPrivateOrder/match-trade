@@ -7,6 +7,8 @@ import com.pig4cloud.captcha.SpecCaptcha;
 import com.pig4cloud.captcha.base.Captcha;
 import com.yuxuan66.ecmc.common.sms.SmsScene;
 import com.yuxuan66.ecmc.common.sms.SmsSenderFactory;
+import com.yuxuan66.ecmc.modules.system.entity.dto.BaseImgCaptchaDto;
+import com.yuxuan66.ecmc.modules.system.entity.dto.BaseSmsCaptchaDto;
 import com.yuxuan66.ecmc.modules.system.entity.dto.SendSmsDto;
 import com.yuxuan66.ecmc.support.base.resp.Rs;
 import com.yuxuan66.ecmc.support.cache.ConfigKit;
@@ -60,17 +62,16 @@ public class CaptchaService {
 
     /**
      * 校验图片验证码
-     * @param uuid uuid
      * @param imgCode 图片验证码
      */
-    public void checkImgCaptcha(String uuid,String imgCode){
-        if(!StaticComp.redisKit.exist(CacheKey.CAPTCHA_IMG_PRE + uuid)){
-            log.debug("图片验证码已过期,uuid:{}",uuid);
+    public void checkImgCaptcha(BaseImgCaptchaDto imgCode){
+        if(!StaticComp.redisKit.exist(CacheKey.CAPTCHA_IMG_PRE + imgCode.getUuid())){
+            log.debug("图片验证码已过期,uuid:{}",imgCode.getUuid());
             throw new BizException("图片验证码输入错误");
         }
-        String code = StaticComp.redisKit.getAndDel(CacheKey.CAPTCHA_IMG_PRE + uuid);
-        if(!code.equalsIgnoreCase(imgCode)){
-            log.debug("图片验证码输入错误,uuid:{},code:{},inputCode:{}",uuid,code,imgCode);
+        String code = StaticComp.redisKit.getAndDel(CacheKey.CAPTCHA_IMG_PRE + imgCode.getUuid());
+        if(!code.equalsIgnoreCase(imgCode.getImgCode())){
+            log.debug("图片验证码输入错误,uuid:{},code:{},inputCode:{}",imgCode.getUuid(),code,imgCode);
             throw new BizException("图片验证码输入错误");
         }
     }
@@ -93,7 +94,7 @@ public class CaptchaService {
      * @param smsScene 短信场景
      */
     public void sendSms(SendSmsDto sendSmsDto,String templateKey,SmsScene smsScene) {
-        checkImgCaptcha(sendSmsDto.getUuid(), sendSmsDto.getImgCode());
+        checkImgCaptcha(sendSmsDto);
         // 根据配置生成指定位数的验证码
         String code = generateSMSVerificationCode();
         Map<String, Object> templateData = MapUtil.newHashMap(2);
@@ -102,6 +103,17 @@ public class CaptchaService {
         smsSenderFactory.getSmsSender().send(sendSmsDto.getPhone(), ConfigKit.get(templateKey), JSONObject.toJSONString(templateData), smsScene.getDescription());
         // 保存此次发送记录
         StaticComp.redisKit.set(CacheKey.CAPTCHA_PHONE_LOGIN_PRE + sendSmsDto.getPhone(), templateData.get("code").toString(),ConfigKit.get(CacheKey.CAPTCHA_EXPIRE_TIME,Long.class));
+    }
+
+    /**
+     * 校验短信验证码
+     * @param smsCaptchaDto 短信验证码
+     */
+    public void checkSmsCode(BaseSmsCaptchaDto smsCaptchaDto){
+        String code = StaticComp.redisKit.getAndDel(CacheKey.CAPTCHA_PHONE_LOGIN_PRE + smsCaptchaDto.getPhone());
+        if (!code.equals(smsCaptchaDto.getSmsCode())) {
+            throw new BizException("短信验证码错误");
+        }
     }
 
 

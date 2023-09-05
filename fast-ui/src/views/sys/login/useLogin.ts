@@ -117,6 +117,10 @@ export function useFormRules(formData?: Recordable) {
             case LoginStateEnum.RESET_PASSWORD:
                 return {
                     ...mobileRule,
+                    password: passwordFormRule,
+                    confirmPassword: [
+                        {validator: validateConfirmPassword(formData?.password), trigger: 'change'},
+                    ],
                 };
 
             // mobile form rules

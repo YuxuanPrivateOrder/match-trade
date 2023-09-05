@@ -100,6 +100,14 @@
   async function handleReset() {
     const form = unref(formRef);
     if (!form) return;
-    await form.resetFields();
+    const data = await form.validate();
+
+    if (!data) return;
+    loading.value = true;
+    setTimeout(() => {
+      loading.value = false;
+      alert(1)
+    }, 2000);
+
   }
 </script>

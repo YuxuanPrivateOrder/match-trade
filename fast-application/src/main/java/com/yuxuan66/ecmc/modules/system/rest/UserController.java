@@ -3,6 +3,7 @@ package com.yuxuan66.ecmc.modules.system.rest;
 import cn.hutool.core.map.MapUtil;
 import com.yuxuan66.ecmc.modules.system.entity.User;
 import com.yuxuan66.ecmc.modules.system.entity.dto.LoginDto;
+import com.yuxuan66.ecmc.modules.system.entity.dto.UpdatePasswordDto;
 import com.yuxuan66.ecmc.modules.system.entity.query.UserQuery;
 import com.yuxuan66.ecmc.modules.system.service.UserService;
 import com.yuxuan66.ecmc.support.base.BaseController;
@@ -95,6 +96,17 @@ public class UserController extends BaseController<UserService> {
     }
 
     /**
+     * 通过手机验证码找回密码
+     * @param updatePasswordDto 找回密码dto
+     * @return 是否成功
+     */
+    @PutMapping(path = "/retrievePassword")
+    public Rs retrievePassword(@RequestBody UpdatePasswordDto updatePasswordDto){
+        baseService.retrievePassword(updatePasswordDto);
+        return Rs.ok();
+    }
+
+    /**
      * 删除用户
      * @param ids 用户id
      */
@@ -103,4 +115,5 @@ public class UserController extends BaseController<UserService> {
         baseService.del(ids);
         return Rs.ok();
     }
+
 }

@@ -9,7 +9,9 @@ enum Api {
   Logout = '/logout',
   GetUserInfo = '/user/getUserInfo',
   GetPermCode = '/user/getPermCode',
+  RetrievePassword = '/user/retrievePassword',
   TestRetry = '/testRetry',
+
 }
 
 import JSEncrypt from 'jsencrypt'
@@ -62,6 +64,19 @@ export function loginSms(params: any) {
   return defHttp.post<LoginResultModel>(
     {
       url: Api.SmsLogin,
+      params,
+    }
+  );
+}
+
+/**
+ * @description: retrievePassword
+ * @param params 找回密码参数
+ */
+export function retrievePassword(params:any){
+return defHttp.post(
+    {
+      url: Api.RetrievePassword,
       params,
     }
   );
