@@ -22,18 +22,7 @@ import java.util.Set;
 @RestController
 public class UserController extends BaseController<UserService> {
 
-    /**
-     * 用户登录
-     *
-     * @param loginDto 登录信息
-     * @return 标准返回
-     */
-    @PostMapping(path = "/login")
-    public Rs login(@RequestBody LoginDto loginDto) {
-        Map<String, Object> tokenInfo = MapUtil.newHashMap(1);
-        tokenInfo.put("token", baseService.login(loginDto));
-        return Rs.ok(tokenInfo);
-    }
+
 
     /**
      * 分页查询用户列表

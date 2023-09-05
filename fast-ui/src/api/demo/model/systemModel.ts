@@ -24,9 +24,9 @@ export type MenuParams = {
 
 export interface AccountListItem {
   id: string;
-  username: string;
+  account: string;
   email: string;
-  nickName: string;
+  nickname: string;
   role: number;
   createTime: string;
   remark: string;

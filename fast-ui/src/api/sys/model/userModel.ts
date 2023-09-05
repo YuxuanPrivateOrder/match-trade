@@ -1,23 +1,18 @@
-import { BasicFetchResult, BasicPageParams } from '/@/api/model/baseModel';
-
 /**
- * 登录接口参数
+ * @description: Login interface parameters
  */
 export interface LoginParams {
   username: string;
   password: string;
 }
 
-/**
- * 角色信息
- */
 export interface RoleInfo {
   roleName: string;
   value: string;
 }
 
 /**
- * 登录接口返回信息
+ * @description: Login interface return value
  */
 export interface LoginResultModel {
   userId: string | number;
@@ -26,7 +21,7 @@ export interface LoginResultModel {
 }
 
 /**
- * 用户信息
+ * @description: Get user information return value
  */
 export interface GetUserInfoModel {
   roles: RoleInfo[];
@@ -41,38 +36,3 @@ export interface GetUserInfoModel {
   // 介绍
   desc?: string;
 }
-/**
- * 用户列表查询参数
- */
-export type ListParam = BasicPageParams & {
-  account?: string;
-  nickname?: string;
-};
-/**
- * 用户列表返回值
- */
-export interface AccountListItem {
-  id: string;
-  account: string;
-  email: string;
-  nickname: string;
-  role: number;
-  createTime: string;
-  remark: string;
-  status: number;
-}
-
-/**
- * 角色列表返回值
- */
-export interface RoleListItem{
-
-}
-
-/**
- *请求列表的返回值
- */
-
-export type UserListGetResultModel = BasicFetchResult<AccountListItem>;
-
-export type RoleListGetResultModel = BasicFetchResult<RoleListItem>

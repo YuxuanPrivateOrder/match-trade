@@ -51,7 +51,7 @@ public class Menu extends BaseEntity<Menu> implements Serializable {
     @TreeField(secondLevel = "meta")
     private String name;
 
-    @TreeField(secondLevel = "meta",like = "name")
+    @TreeField(secondLevel = "meta", like = "name")
     @TableField(exist = false)
     private String title;
 
@@ -106,6 +106,12 @@ public class Menu extends BaseEntity<Menu> implements Serializable {
      */
     @TreeField
     private Integer sort;
+
+    /**
+     * 是否固定在标签栏上
+     */
+    @TreeField(secondLevel = "meta")
+    private Boolean affix;
 
 
 }

@@ -17,11 +17,6 @@
           icon="ion:document-text-outline"
           v-if="getShowDoc"
         />
-        <MenuItem
-          key="info"
-          text="个人资料"
-          icon="ion:person-outline"
-        />
         <MenuDivider v-if="getShowDoc" />
         <MenuItem
           v-if="getUseLockPage"
@@ -41,24 +36,24 @@
 </template>
 <script lang="ts">
   // components
-  import { Dropdown, Menu } from 'ant-design-vue'
-  import type { MenuInfo } from 'ant-design-vue/lib/menu/src/interface'
+  import { Dropdown, Menu } from 'ant-design-vue';
+  import type { MenuInfo } from 'ant-design-vue/lib/menu/src/interface';
 
-  import { defineComponent, computed } from 'vue'
+  import { defineComponent, computed } from 'vue';
 
-  import { DOC_URL } from '/@/settings/siteSetting'
+  import { DOC_URL } from '/@/settings/siteSetting';
 
-  import { useUserStore } from '/@/store/modules/user'
-  import { useHeaderSetting } from '/@/hooks/setting/useHeaderSetting'
-  import { useI18n } from '/@/hooks/web/useI18n'
-  import { useDesign } from '/@/hooks/web/useDesign'
-  import { useModal } from '/@/components/Modal'
+  import { useUserStore } from '/@/store/modules/user';
+  import { useHeaderSetting } from '/@/hooks/setting/useHeaderSetting';
+  import { useI18n } from '/@/hooks/web/useI18n';
+  import { useDesign } from '/@/hooks/web/useDesign';
+  import { useModal } from '/@/components/Modal';
 
-  import headerImg from '/@/assets/images/header.jpg'
-  import { propTypes } from '/@/utils/propTypes'
-  import { openWindow } from '/@/utils'
+  import headerImg from '/@/assets/images/header.jpg';
+  import { propTypes } from '/@/utils/propTypes';
+  import { openWindow } from '/@/utils';
 
-  import { createAsyncComponent } from '/@/utils/factory/createAsyncComponent'
+  import { createAsyncComponent } from '/@/utils/factory/createAsyncComponent';
 
   type MenuEvent = 'logout' | 'doc' | 'lock';
 
@@ -75,43 +70,43 @@
       theme: propTypes.oneOf(['dark', 'light']),
     },
     setup() {
-      const { prefixCls } = useDesign('header-user-dropdown')
-      const { t } = useI18n()
-      const { getShowDoc, getUseLockPage } = useHeaderSetting()
-      const userStore = useUserStore()
+      const { prefixCls } = useDesign('header-user-dropdown');
+      const { t } = useI18n();
+      const { getShowDoc, getUseLockPage } = useHeaderSetting();
+      const userStore = useUserStore();
 
       const getUserInfo = computed(() => {
-        const { realName = '', avatar, desc } = userStore.getUserInfo || {}
-        return { realName, avatar: avatar || headerImg, desc }
-      })
+        const { realName = '', avatar, desc } = userStore.getUserInfo || {};
+        return { realName, avatar: avatar || headerImg, desc };
+      });
 
-      const [register, { openModal }] = useModal()
+      const [register, { openModal }] = useModal();
 
       function handleLock() {
-        openModal(true)
+        openModal(true);
       }
 
       //  login out
       function handleLoginOut() {
-        userStore.confirmLoginOut()
+        userStore.confirmLoginOut();
       }
 
       // open doc
       function openDoc() {
-        openWindow(DOC_URL)
+        openWindow(DOC_URL);
       }
 
       function handleMenuClick(e: MenuInfo) {
         switch (e.key as MenuEvent) {
           case 'logout':
-            handleLoginOut()
-            break
+            handleLoginOut();
+            break;
           case 'doc':
-            openDoc()
-            break
+            openDoc();
+            break;
           case 'lock':
-            handleLock()
-            break
+            handleLock();
+            break;
         }
       }
 
@@ -123,21 +118,21 @@
         getShowDoc,
         register,
         getUseLockPage,
-      }
+      };
     },
-  })
+  });
 </script>
 <style lang="less">
   @prefix-cls: ~'@{namespace}-header-user-dropdown';
 
   .@{prefix-cls} {
+    align-items: center;
     height: @header-height;
     padding: 0 0 0 10px;
     padding-right: 10px;
     overflow: hidden;
     font-size: 12px;
     cursor: pointer;
-    align-items: center;
 
     img {
       width: 24px;

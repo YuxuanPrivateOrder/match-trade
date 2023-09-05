@@ -4,6 +4,13 @@ export function is(val: unknown, type: string) {
   return toString.call(val) === `[object ${type}]`;
 }
 
+/**
+ * 判断是否是正常的国内手机号
+ * @param val 手机号
+ */
+export function isPhone(val) {
+    return /^1[3456789]\d{9}$/.test(String(val));
+}
 export function isDef<T = unknown>(val?: T): val is T {
   return typeof val !== 'undefined';
 }
@@ -93,6 +100,6 @@ export const isServer = typeof window === 'undefined';
 export const isClient = !isServer;
 
 export function isUrl(path: string): boolean {
-  const reg = /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
+  const reg = /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- ./?%&=]*)?/;
   return reg.test(path);
 }

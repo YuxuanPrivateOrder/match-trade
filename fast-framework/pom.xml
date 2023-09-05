@@ -12,12 +12,26 @@
     <artifactId>fast-framework</artifactId>
 
     <dependencies>
+        <!-- 验证码框架 -->
+        <dependency>
+            <groupId>com.pig4cloud.plugin</groupId>
+            <artifactId>captcha-spring-boot-starter</artifactId>
+        </dependency>
+        <!-- 阿里云短信发送 -->
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>alibabacloud-dysmsapi20170525</artifactId>
+        </dependency>
+        <!-- 动态Mapper生成 -->
+        <dependency>
+            <groupId>com.yuxuan66</groupId>
+            <artifactId>mapper-processor</artifactId>
+        </dependency>
         <!-- POI -->
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
         </dependency>
-        <!-- FastJSON -->
         <!-- FastJSON -->
         <dependency>
             <groupId>com.alibaba</groupId>
@@ -84,6 +98,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <!-- SpringBoot MQ -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
         </dependency>
     </dependencies>
 

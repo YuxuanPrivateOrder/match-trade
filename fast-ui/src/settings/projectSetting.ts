@@ -1,6 +1,6 @@
-import type { ProjectConfig } from '/#/config'
-import { MenuTypeEnum, MenuModeEnum, TriggerEnum, MixSidebarTriggerEnum } from '/@/enums/menuEnum'
-import { CacheTypeEnum } from '/@/enums/cacheEnum'
+import type { ProjectConfig } from '/#/config';
+import { MenuTypeEnum, MenuModeEnum, TriggerEnum, MixSidebarTriggerEnum } from '/@/enums/menuEnum';
+import { CacheTypeEnum } from '/@/enums/cacheEnum';
 import {
   ContentEnum,
   PermissionModeEnum,
@@ -8,14 +8,15 @@ import {
   RouterTransitionEnum,
   SettingButtonPositionEnum,
   SessionTimeoutProcessingEnum,
-} from '/@/enums/appEnum'
-import { SIDE_BAR_BG_COLOR_LIST, HEADER_PRESET_BG_COLOR_LIST } from './designSetting'
-import { primaryColor } from '../../build/config/themeConfig'
+} from '/@/enums/appEnum';
+import { SIDE_BAR_BG_COLOR_LIST, HEADER_PRESET_BG_COLOR_LIST } from './designSetting';
+
+const primaryColor = '#0960bd';
 
 // ! You need to clear the browser cache after the change
 const setting: ProjectConfig = {
   // Whether to show the configuration button
-  showSettingButton: false,
+  showSettingButton: true,
 
   // Whether to show the theme switch button
   showDarkModeToggle: true,
@@ -51,7 +52,7 @@ const setting: ProjectConfig = {
   showLogo: true,
 
   // Whether to show footer
-  showFooter: false,
+  showFooter: true,
 
   // Header configuration
   headerSetting: {
@@ -68,9 +69,9 @@ const setting: ProjectConfig = {
     // Whether to show the full screen button
     showFullScreen: true,
     // Whether to show the document button
-    showDoc: false,
+    showDoc: true,
     // Whether to show the notification button
-    showNotice: false,
+    showNotice: true,
     // Whether to display the menu search
     showSearch: true,
   },
@@ -177,6 +178,6 @@ const setting: ProjectConfig = {
   // Whether to cancel the http request that has been sent but not responded when switching the interface.
   // If it is enabled, I want to overwrite a single interface. Can be set in a separate interface
   removeAllHttpPending: false,
-}
+};
 
-export default setting
+export default setting;

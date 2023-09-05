@@ -45,6 +45,7 @@ public class GlobalExceptionHandler {
 
     /**
      * 没有登录
+     *
      * @param e 错误信息
      * @return 没有登录
      */
@@ -65,13 +66,15 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<Rs> handleException(Throwable e) {
-        e.printStackTrace();
+
         String message = Convert.toStr(e.getMessage(), "服务器异常,请稍后重试...");
 
 
         if (e.getClass().equals(BizException.class)) {
+            log.error("业务异常:{}", message);
             return buildResponseEntity(Rs.error(e.getMessage()));
         }
+        log.error(message, e);
         // 数据库执行报错
         String dbImplementError = "Error updating database";
         if (message.contains(dbImplementError)) {

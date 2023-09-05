@@ -1,5 +1,5 @@
 <template>
-  <template v-if="getShow">
+  <div v-if="getShow">
     <LoginFormTitle class="enter-x" />
     <Form class="p-4 enter-x" :model="formData" :rules="getFormRules" ref="formRef">
       <FormItem name="account" class="enter-x">
@@ -23,6 +23,7 @@
           size="large"
           class="fix-auto-fill"
           v-model:value="formData.sms"
+          :sendCodeApi="sendCode"
           :placeholder="t('sys.login.smsCode')"
         />
       </FormItem>
@@ -63,7 +64,7 @@
         {{ t('sys.login.backSignIn') }}
       </Button>
     </Form>
-  </template>
+  </div>
 </template>
 <script lang="ts" setup>
   import { reactive, ref, unref, computed } from 'vue';
@@ -73,6 +74,7 @@
   import { CountdownInput } from '/@/components/CountDown';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useLoginState, useFormRules, useFormValid, LoginStateEnum } from './useLogin';
+  import {imgCaptcha, smsRegister} from "@/api/sys/captcha";
 
   const FormItem = Form.Item;
   const InputPassword = Input.Password;
@@ -81,7 +83,8 @@
 
   const formRef = ref();
   const loading = ref(false);
-
+  const uuid = ref(null)
+  const captcha = ref('')
   const formData = reactive({
     account: '',
     password: '',
@@ -89,6 +92,7 @@
     mobile: '',
     sms: '',
     policy: false,
+    imgCode: ''
   });
 
   const { getFormRules } = useFormRules(formData);
@@ -96,6 +100,23 @@
 
   const getShow = computed(() => unref(getLoginState) === LoginStateEnum.REGISTER);
 
+  function doImgCaptcha(){
+    imgCaptcha().then((res)=>{
+      uuid.value = res.uuid
+      captcha.value = res.img
+      formData.imgCode = ''
+    })
+  }
+  doImgCaptcha()
+
+  async function sendCode() {
+    const data = await unref(formRef).validateFields('mobile')
+    if (data){
+      await smsRegister(data.mobile)
+      return true
+    }
+    return false
+  }
   async function handleRegister() {
     const data = await validForm();
     if (!data) return;

@@ -52,13 +52,18 @@
         {{ t('sys.login.registerButton') }}
       </Button> -->
     </FormItem>
-    <ARow class="enter-x" :gutter="10">
-      <ACol :md="12" :xs="24">
+    <ARow class="enter-x" :gutter="[16, 16]">
+      <ACol :md="8" :xs="24">
         <Button block @click="setLoginState(LoginStateEnum.MOBILE)">
           {{ t('sys.login.mobileSignInFormTitle') }}
         </Button>
       </ACol>
-      <ACol :md="12" :xs="24">
+      <ACol :md="8" :xs="24">
+        <Button block @click="setLoginState(LoginStateEnum.QR_CODE)">
+          {{ t('sys.login.qrSignInFormTitle') }}
+        </Button>
+      </ACol>
+      <ACol :md="8" :xs="24">
         <Button block @click="setLoginState(LoginStateEnum.REGISTER)">
           {{ t('sys.login.registerButton') }}
         </Button>
@@ -68,7 +73,11 @@
     <Divider class="enter-x">{{ t('sys.login.otherSignIn') }}</Divider>
 
     <div class="flex justify-evenly enter-x" :class="`${prefixCls}-sign-in-way`">
-      <img class="eveLogin" :src="eveLogin" alt="点击登录" />
+      <GithubFilled />
+      <WechatFilled />
+      <AlipayCircleFilled />
+      <GoogleCircleFilled />
+      <TwitterCircleFilled />
     </div>
   </Form>
 </template>
@@ -91,7 +100,7 @@
   import { useUserStore } from '/@/store/modules/user';
   import { LoginStateEnum, useLoginState, useFormRules, useFormValid } from './useLogin';
   import { useDesign } from '/@/hooks/web/useDesign';
-  import eveLogin from '/@/assets/images/eve_login.png';
+  //import { onKeyStroke } from '@vueuse/core';
 
   const ACol = Col;
   const ARow = Row;
@@ -107,12 +116,12 @@
 
   const formRef = ref();
   const loading = ref(false);
-  const rememberMe = ref(localStorage.getItem('ecmcRememberMe') === 'true');
-
+  const rememberMe = ref(localStorage.getItem('faRememberMe') === 'true')
   const formData = reactive({
-    account: localStorage.getItem('ecmcUserName'),
-    password: localStorage.getItem('ecmcPassword'),
-  });
+    account: localStorage.getItem('faUserName'),
+    password: localStorage.getItem('faPassword'),
+  })
+
 
   const { validForm } = useFormValid(formRef);
 
@@ -132,13 +141,13 @@
       });
       if (userInfo) {
         if (rememberMe.value) {
-          localStorage.setItem('ecmcUserName', data.account);
-          localStorage.setItem('ecmcPassword', data.password);
-          localStorage.setItem('ecmcRememberMe','true');
+          localStorage.setItem('faUserName', data.account)
+          localStorage.setItem('faPassword', data.password)
+          localStorage.setItem('faRememberMe', 'true')
         } else {
-          localStorage.removeItem('ecmcUserName');
-          localStorage.removeItem('ecmcPassword');
-          localStorage.setItem('ecmcRememberMe','false');
+          localStorage.removeItem('faUserName')
+          localStorage.removeItem('faPassword')
+          localStorage.setItem('faRememberMe', 'false')
         }
         notification.success({
           message: t('sys.login.loginSuccessTitle'),
@@ -157,9 +166,3 @@
     }
   }
 </script>
-
-<style scoped lang="less">
-.eveLogin {
-  cursor: pointer;
-}
-</style>

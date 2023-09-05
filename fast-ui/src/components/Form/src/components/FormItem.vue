@@ -1,4 +1,5 @@
 <script lang="tsx">
+  import { type Recordable, type Nullable } from '@vben/types';
   import type { PropType, Ref } from 'vue';
   import { computed, defineComponent, toRefs, unref } from 'vue';
   import type { FormActionType, FormProps, FormSchema } from '../types/form';
@@ -9,7 +10,11 @@
   import { BasicHelp } from '/@/components/Basic';
   import { isBoolean, isFunction, isNull } from '/@/utils/is';
   import { getSlot } from '/@/utils/helper/tsxHelper';
-  import { createPlaceholderMessage, setComponentRuleType } from '../helper';
+  import {
+    createPlaceholderMessage,
+    NO_AUTO_LINK_COMPONENTS,
+    setComponentRuleType,
+  } from '../helper';
   import { cloneDeep, upperFirst } from 'lodash-es';
   import { useItemLabelWidth } from '../hooks/useLabelWidth';
   import { useI18n } from '/@/hooks/web/useI18n';
@@ -27,11 +32,11 @@
         default: () => ({}),
       },
       allDefaultValues: {
-        type: Object as PropType<Recordable>,
+        type: Object as PropType<Recordable<any>>,
         default: () => ({}),
       },
       formModel: {
-        type: Object as PropType<Recordable>,
+        type: Object as PropType<Recordable<any>>,
         default: () => ({}),
       },
       setFormModel: {
@@ -68,7 +73,7 @@
             ...mergeDynamicData,
             ...allDefaultValues,
             ...formModel,
-          } as Recordable,
+          } as Recordable<any>,
           schema: schema,
         };
       });
@@ -80,12 +85,16 @@
           componentProps = componentProps({ schema, tableAction, formModel, formActionType }) ?? {};
         }
         if (schema.component === 'Divider') {
-          componentProps = Object.assign({ type: 'horizontal' }, componentProps, {
-            orientation: 'left',
-            plain: true,
-          });
+          componentProps = Object.assign(
+            { type: 'horizontal' },
+            {
+              orientation: 'left',
+              plain: true,
+            },
+            componentProps,
+          );
         }
-        return componentProps as Recordable;
+        return componentProps as Recordable<any>;
       });
 
       const getDisable = computed(() => {
@@ -227,7 +236,7 @@
         if (characterInx !== -1 && !rules[characterInx].validator) {
           rules[characterInx].message =
             rules[characterInx].message ||
-            t('component.form.maxTip', [rules[characterInx].max] as Recordable);
+            t('component.form.maxTip', [rules[characterInx].max] as Recordable<any>);
         }
         return rules;
       }
@@ -246,7 +255,7 @@
         const eventKey = `on${upperFirst(changeEvent)}`;
 
         const on = {
-          [eventKey]: (...args: Nullable<Recordable>[]) => {
+          [eventKey]: (...args: Nullable<Recordable<any>>[]) => {
             const [e] = args;
             if (propsData[eventKey]) {
               propsData[eventKey](...args);
@@ -256,11 +265,10 @@
             props.setFormModel(field, value, props.schema);
           },
         };
-        // 不能删除此行代码，会导致无法创建组件
         const Comp = componentMap.get(component) as ReturnType<typeof defineComponent>;
 
         const { autoSetPlaceHolder, size } = props.formProps;
-        const propsData: Recordable = {
+        const propsData: Recordable<any> = {
           allowClear: true,
           getPopupContainer: (trigger: Element) => trigger.parentNode,
           size,
@@ -277,11 +285,11 @@
         propsData.codeField = field;
         propsData.formValues = unref(getValues);
 
-        const bindValue: Recordable = {
+        const bindValue: Recordable<any> = {
           [valueField || (isCheck ? 'checked' : 'value')]: props.formModel[field],
         };
 
-        const compAttr: Recordable = {
+        const compAttr: Recordable<any> = {
           ...propsData,
           ...on,
           ...bindValue,
@@ -291,7 +299,7 @@
           return <Comp {...compAttr} />;
         }
         const compSlot = isFunction(renderComponentContent)
-          ? { ...renderComponentContent(unref(getValues)) }
+          ? { ...renderComponentContent(unref(getValues), { disabled: unref(getDisable) }) }
           : {
               default: () => renderComponentContent,
             };
@@ -300,9 +308,6 @@
 
       function renderLabelHelpMessage() {
         const { label, helpMessage, helpComponentProps, subLabel } = props.schema;
-        if(!label){
-          return null
-        }
         const renderLabel = subLabel ? (
           <span>
             {label} <span class="text-secondary">{subLabel}</span>
@@ -328,7 +333,7 @@
         const { itemProps, slot, render, field, suffix, component } = props.schema;
         const { labelCol, wrapperCol } = unref(itemLabelWidthProp);
         const { colon } = props.formProps;
-
+        const opts = { disabled: unref(getDisable) };
         if (component === 'Divider') {
           return (
             <Col span={24}>
@@ -338,27 +343,36 @@
         } else {
           const getContent = () => {
             return slot
-              ? getSlot(slots, slot, unref(getValues))
+              ? getSlot(slots, slot, unref(getValues), opts)
               : render
-              ? render(unref(getValues))
+              ? render(unref(getValues), opts)
               : renderComponent();
           };
 
           const showSuffix = !!suffix;
           const getSuffix = isFunction(suffix) ? suffix(unref(getValues)) : suffix;
 
+          // TODO 自定义组件验证会出现问题，因此这里框架默认将自定义组件设置手动触发验证，如果其他组件还有此问题请手动设置autoLink=false
+          if (NO_AUTO_LINK_COMPONENTS.includes(component)) {
+            props.schema &&
+              (props.schema.itemProps! = {
+                autoLink: false,
+                ...props.schema.itemProps,
+              });
+          }
+
           return (
             <Form.Item
               name={field}
               colon={colon}
               class={{ 'suffix-item': showSuffix }}
-              {...(itemProps as Recordable)}
-              rules={handleRules()}
+              {...(itemProps as Recordable<any>)}
               label={renderLabelHelpMessage()}
+              rules={handleRules()}
               labelCol={labelCol}
               wrapperCol={wrapperCol}
             >
-              <div style="display:flex;margin-right:10px">
+              <div style="display:flex">
                 <div style="flex:1;">{getContent()}</div>
                 {showSuffix && <span class="suffix">{getSuffix}</span>}
               </div>
@@ -377,12 +391,13 @@
         const realColProps = { ...baseColProps, ...colProps };
         const { isIfShow, isShow } = getShow();
         const values = unref(getValues);
+        const opts = { disabled: unref(getDisable) };
 
         const getContent = () => {
           return colSlot
-            ? getSlot(slots, colSlot, values)
+            ? getSlot(slots, colSlot, values, opts)
             : renderColContent
-            ? renderColContent(values)
+            ? renderColContent(values, opts)
             : renderItem();
         };
 

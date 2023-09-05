@@ -31,10 +31,30 @@
         <sa-token.version>1.33.0</sa-token.version>
         <fastjson.version>1.2.80</fastjson.version>
         <poi.version>4.1.2</poi.version>
+        <alibabacloud-dysmsapi20170525.version>2.0.24</alibabacloud-dysmsapi20170525.version>
+        <captcha-spring-boot-starter.version>2.2.3</captcha-spring-boot-starter.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+              <!-- 验证码框架 -->
+            <dependency>
+                <groupId>com.pig4cloud.plugin</groupId>
+                <artifactId>captcha-spring-boot-starter</artifactId>
+                <version>${captcha-spring-boot-starter.version}</version>
+            </dependency>
+            <!-- 阿里云短信发送 -->
+            <dependency>
+                <groupId>com.aliyun</groupId>
+                <artifactId>alibabacloud-dysmsapi20170525</artifactId>
+                <version>${alibabacloud-dysmsapi20170525.version}</version>
+            </dependency>
+            <!-- 动态Mapper生成 -->
+            <dependency>
+                <groupId>com.yuxuan66</groupId>
+                <artifactId>mapper-processor</artifactId>
+                <version>0.0.1</version>
+            </dependency>
             <!-- POI -->
             <dependency>
                 <groupId>org.apache.poi</groupId>

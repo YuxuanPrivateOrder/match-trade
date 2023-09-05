@@ -3,6 +3,7 @@ package com.yuxuan66.ecmc.modules.system.service;
 import cn.hutool.crypto.asymmetric.KeyType;
 import cn.hutool.crypto.asymmetric.RSA;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.yuxuan66.ecmc.cache.redis.RedisKit;
 import com.yuxuan66.ecmc.common.utils.FileUtil;
 import com.yuxuan66.ecmc.common.utils.PasswordUtil;
 import com.yuxuan66.ecmc.common.utils.StpUtil;
@@ -13,6 +14,7 @@ import com.yuxuan66.ecmc.modules.system.entity.User;
 import com.yuxuan66.ecmc.modules.system.entity.UsersRoles;
 import com.yuxuan66.ecmc.modules.system.entity.consts.UserStatus;
 import com.yuxuan66.ecmc.modules.system.entity.dto.LoginDto;
+import com.yuxuan66.ecmc.modules.system.entity.dto.SmsLoginDto;
 import com.yuxuan66.ecmc.modules.system.entity.dto.UserInfoDto;
 import com.yuxuan66.ecmc.modules.system.entity.query.UserQuery;
 import com.yuxuan66.ecmc.modules.system.mapper.RoleMapper;
@@ -20,7 +22,9 @@ import com.yuxuan66.ecmc.modules.system.mapper.UserMapper;
 import com.yuxuan66.ecmc.modules.system.mapper.UsersRolesMapper;
 import com.yuxuan66.ecmc.support.base.BaseService;
 import com.yuxuan66.ecmc.support.base.resp.Ps;
+import com.yuxuan66.ecmc.support.cache.key.CacheKey;
 import com.yuxuan66.ecmc.support.exception.BizException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -34,12 +38,28 @@ import java.util.stream.Collectors;
  * @since 2022/12/6
  */
 @Service
+@RequiredArgsConstructor
 public class UserService extends BaseService<User, UserMapper> {
 
+    private final RedisKit redisKit;
+    private final CaptchaService captchaService;
     @Resource
     private RoleMapper roleMapper;
     @Resource
     private UsersRolesMapper usersRolesMapper;
+
+
+    /**
+     * 判断用户状态并保存登陆信息
+     * @param user 用户
+     */
+    private void checkStatus$Login(User user){
+        // 判断用户状态
+        if (user.getStatus() != UserStatus.NORMAL) {
+            throw new BizException("您的账户已经被" + user.getStatus().getName() + ", 请联系系统管理员.");
+        }
+        StpUtil.login(user);
+    }
 
     /**
      * 用户登录
@@ -57,11 +77,32 @@ public class UserService extends BaseService<User, UserMapper> {
         if (user == null || !PasswordUtil.validatePassword(password, user.getPassword())) {
             throw new BizException("用户名密码输入错误");
         }
-        // 判断用户状态
-        if (user.getStatus() != UserStatus.NORMAL) {
-            throw new BizException("您的账户已经被" + user.getStatus().getName() + ", 请联系系统管理员.");
+        checkStatus$Login(user);
+
+        return StpUtil.getTokenValue();
+    }
+
+    /**
+     * 手机验证码登陆
+     * @param smsLoginDto 登陆信息
+     * @return 标准返回
+     */
+    public String login(SmsLoginDto smsLoginDto) {
+        // 判断图片验证码
+        captchaService.checkImgCaptcha(smsLoginDto.getUuid(), smsLoginDto.getImgCode());
+        // 判断手机验证码是否正确
+        String code = redisKit.getAndDel(CacheKey.CAPTCHA_PHONE_LOGIN_PRE + smsLoginDto.getPhone());
+        if (!code.equals(smsLoginDto.getCode())) {
+            throw new BizException("短信验证码错误");
         }
-        StpUtil.login(user);
+        // 判断用户是否存在
+        User user = query().eq("phone", smsLoginDto.getPhone()).one();
+
+        if(user == null){
+            throw new BizException("手机号尚未注册，请先注册用户");
+        }
+
+        checkStatus$Login(user);
 
         return StpUtil.getTokenValue();
     }
@@ -164,5 +205,6 @@ public class UserService extends BaseService<User, UserMapper> {
     public void download(UserQuery userQuery){
         FileUtil.exportExcel(preDownload(baseMapper.listUser(userQuery)));
     }
+
 
 }

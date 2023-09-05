@@ -16,10 +16,11 @@ public class CustomSaInterceptor extends SaInterceptor {
     public CustomSaInterceptor() {
         super(handler -> {
             SaRouter.match("/**")
-                    .notMatch("/user/login")
+                    .notMatch("/login*")
                     .notMatch("*.*")
+                    // 验证码相关的放开鉴权
+                    .notMatch("/captcha/*")
                     // 放开公开的API
-                    .notMatch("/openApi/**")
                     .check(r -> StpUtil.checkLogin());
         });
     }

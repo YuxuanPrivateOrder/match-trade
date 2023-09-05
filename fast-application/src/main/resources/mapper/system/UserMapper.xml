@@ -30,6 +30,7 @@
             <result column="mName" property="name"/>
             <result column="pid" property="pid"/>
             <result column="type" property="type"/>
+            <result column="affix" property="affix"/>
             <result column="icon" property="icon"/>
             <result column="is_link" property="isLink"/>
             <result column="frame" property="frame"/>

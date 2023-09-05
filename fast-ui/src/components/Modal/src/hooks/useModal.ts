@@ -14,13 +14,13 @@ import {
   watchEffect,
   nextTick,
   toRaw,
+  computed,
 } from 'vue';
 import { isProdMode } from '/@/utils/env';
 import { isFunction } from '/@/utils/is';
 import { isEqual } from 'lodash-es';
 import { tryOnUnmounted } from '@vueuse/core';
 import { error } from '/@/utils/log';
-import { computed } from 'vue';
 
 const dataTransfer = reactive<any>({});
 
@@ -129,7 +129,7 @@ export const useModalInner = (callbackFn?: Fn): UseModalInnerReturnType => {
     if (!callbackFn || !isFunction(callbackFn)) return;
     nextTick(() => {
       callbackFn(data);
-    })
+    });
   });
 
   return [
