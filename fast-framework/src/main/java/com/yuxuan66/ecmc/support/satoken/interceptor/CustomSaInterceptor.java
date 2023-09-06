@@ -1,4 +1,4 @@
-package com.yuxuan66.ecmc.support.interceptor;
+package com.yuxuan66.ecmc.support.satoken.interceptor;
 
 import cn.dev33.satoken.interceptor.SaInterceptor;
 import cn.dev33.satoken.router.SaRouter;
@@ -16,11 +16,7 @@ public class CustomSaInterceptor extends SaInterceptor {
     public CustomSaInterceptor() {
         super(handler -> {
             SaRouter.match("/**")
-                    .notMatch("/login*")
                     .notMatch("*.*")
-                    // 验证码相关的放开鉴权
-                    .notMatch("/captcha/*")
-                    // 放开公开的API
                     .check(r -> StpUtil.checkLogin());
         });
     }

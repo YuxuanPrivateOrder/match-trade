@@ -9,10 +9,7 @@ import com.yuxuan66.ecmc.common.utils.FileUtil;
 import com.yuxuan66.ecmc.common.utils.PasswordUtil;
 import com.yuxuan66.ecmc.common.utils.StpUtil;
 import com.yuxuan66.ecmc.config.RsaProperties;
-import com.yuxuan66.ecmc.modules.system.entity.Menu;
-import com.yuxuan66.ecmc.modules.system.entity.Role;
-import com.yuxuan66.ecmc.modules.system.entity.User;
-import com.yuxuan66.ecmc.modules.system.entity.UsersRoles;
+import com.yuxuan66.ecmc.modules.system.entity.*;
 import com.yuxuan66.ecmc.modules.system.entity.consts.UserStatus;
 import com.yuxuan66.ecmc.modules.system.entity.dto.LoginDto;
 import com.yuxuan66.ecmc.modules.system.entity.dto.SmsLoginDto;
@@ -24,15 +21,19 @@ import com.yuxuan66.ecmc.modules.system.mapper.UserMapper;
 import com.yuxuan66.ecmc.modules.system.mapper.UsersRolesMapper;
 import com.yuxuan66.ecmc.support.base.BaseService;
 import com.yuxuan66.ecmc.support.base.resp.Ps;
+import com.yuxuan66.ecmc.support.cache.ConfigKit;
 import com.yuxuan66.ecmc.support.cache.key.CacheKey;
 import com.yuxuan66.ecmc.support.exception.BizException;
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 /**
@@ -40,11 +41,13 @@ import java.util.stream.Collectors;
  * @since 2022/12/6
  */
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class UserService extends BaseService<User, UserMapper> {
 
     private final RedisKit redisKit;
     private final CaptchaService captchaService;
+    private final ReentrantLock lock = new ReentrantLock();
     @Resource
     private RoleMapper roleMapper;
     @Resource
@@ -53,9 +56,10 @@ public class UserService extends BaseService<User, UserMapper> {
 
     /**
      * 判断用户状态并保存登陆信息
+     *
      * @param user 用户
      */
-    private void checkStatus$Login(User user){
+    private void checkStatus$Login(User user) {
         // 判断用户状态
         if (user.getStatus() != UserStatus.NORMAL) {
             throw new BizException("您的账户已经被" + user.getStatus().getName() + ", 请联系系统管理员.");
@@ -86,6 +90,7 @@ public class UserService extends BaseService<User, UserMapper> {
 
     /**
      * 手机验证码登陆
+     *
      * @param smsLoginDto 登陆信息
      * @return 标准返回
      */
@@ -100,7 +105,7 @@ public class UserService extends BaseService<User, UserMapper> {
         // 判断用户是否存在
         User user = query().eq("phone", smsLoginDto.getPhone()).one();
 
-        if(user == null){
+        if (user == null) {
             throw new BizException("手机号尚未注册，请先注册用户");
         }
 
@@ -177,14 +182,15 @@ public class UserService extends BaseService<User, UserMapper> {
 
     /**
      * 编辑一个用户
+     *
      * @param user 用户
      */
-    public void edit(User user){
+    public void edit(User user) {
         User old = getById(user.getId());
-        if(!user.getPassword().equals(old.getPassword())){
+        if (!user.getPassword().equals(old.getPassword())) {
             user.setPassword(PasswordUtil.createHash(user.getPassword()));
         }
-        usersRolesMapper.delete(new QueryWrapper<UsersRoles>().eq("user_id",user.getId()));
+        usersRolesMapper.delete(new QueryWrapper<UsersRoles>().eq("user_id", user.getId()));
         for (Long roleId : user.getRoleIds()) {
             new UsersRoles(user.getId(), roleId).insert();
         }
@@ -193,34 +199,72 @@ public class UserService extends BaseService<User, UserMapper> {
 
     /**
      * 删除用户
+     *
      * @param ids 用户id
      */
-    public void del(Set<Long>ids){
-        usersRolesMapper.delete(new QueryWrapper<UsersRoles>().in("user_id",ids));
+    public void del(Set<Long> ids) {
+        usersRolesMapper.delete(new QueryWrapper<UsersRoles>().in("user_id", ids));
         // TODO 移除用户关联的角色等信息
         removeBatchByIds(ids);
     }
 
     /**
      * 重置密码
+     *
+     * @param updatePasswordDto 重置密码信息
      */
-    public void retrievePassword(UpdatePasswordDto updatePasswordDto){
+    public void retrievePassword(UpdatePasswordDto updatePasswordDto) {
         // 校验图形验证码
         captchaService.checkImgCaptcha(updatePasswordDto);
         // 校验手机验证码
         captchaService.checkSmsCode(updatePasswordDto);
         // 修改用户密码
         User user = query().eq("phone", updatePasswordDto.getPhone()).one();
-        Assert.notNull(user,()->BizException.of("当前手机号尚未注册用户"));
+        Assert.notNull(user, () -> BizException.of("当前手机号尚未注册用户"));
         user.setPassword(PasswordUtil.createHash(updatePasswordDto.getNewPassword()));
         user.updateById();
     }
 
     /**
+     * 注册用户
+     *
+     * @param registerDto 注册信息
+     */
+    public void register(RegisterDto registerDto) {
+        // 校验图形验证码
+        captchaService.checkImgCaptcha(registerDto);
+        // 校验手机验证码
+        captchaService.checkSmsCode(registerDto);
+        // 创建一个新用户
+        try {
+            lock.lock();
+            // 判断用户是否存在
+            Assert.isFalse(checkFieldExist("phone", registerDto.getPhone(), null), () -> BizException.of("当前手机号已经注册"));
+            // 判断账号是否存在
+            Assert.isFalse(checkFieldExist("username", registerDto.getAccount(), null), () -> BizException.of("当前账号已经注册"));
+            // 创建新用户
+            User user = new User();
+            user.setUsername(registerDto.getAccount());
+            user.setNickName(registerDto.getAccount());
+            user.setAvatar(ConfigKit.get(CacheKey.DEFAULT_USER_AVATAR));
+            user.setPhone(registerDto.getPhone());
+            user.setPassword(PasswordUtil.createHash(registerDto.getPassword()));
+            user.insert();
+            // 创建用户角色
+            String roleId = ConfigKit.get(CacheKey.DEFAULT_USER_ROLE);
+            Assert.notBlank(roleId, () -> BizException.of("系统未配置默认用户角色"));
+            new UsersRoles(user.getId(), Long.parseLong(roleId)).insert();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
      * 导出用户列表
+     *
      * @param userQuery 查询条件
      */
-    public void download(UserQuery userQuery){
+    public void download(UserQuery userQuery) {
         FileUtil.exportExcel(preDownload(baseMapper.listUser(userQuery)));
     }
 

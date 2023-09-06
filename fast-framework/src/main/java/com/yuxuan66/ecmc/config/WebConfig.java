@@ -1,7 +1,7 @@
 package com.yuxuan66.ecmc.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yuxuan66.ecmc.support.interceptor.CustomSaInterceptor;
+import com.yuxuan66.ecmc.support.satoken.interceptor.CustomSaInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

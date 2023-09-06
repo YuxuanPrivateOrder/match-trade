@@ -1,5 +1,6 @@
 package com.yuxuan66.ecmc.modules.system.rest;
 
+import cn.dev33.satoken.annotation.SaIgnore;
 import cn.hutool.core.lang.Assert;
 import com.yuxuan66.ecmc.common.sms.SmsScene;
 import com.yuxuan66.ecmc.modules.system.entity.dto.SendSmsDto;
@@ -23,6 +24,7 @@ import java.util.Map;
  * @author Sir丶雨轩
  * @since 2023/9/4
  */
+@SaIgnore
 @RestController
 @RequestMapping(path = "/captcha")
 @RequiredArgsConstructor

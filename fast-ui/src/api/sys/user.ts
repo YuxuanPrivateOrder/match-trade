@@ -1,16 +1,20 @@
-import { defHttp } from '/@/utils/http/axios';
-import { LoginParams, LoginResultModel, GetUserInfoModel } from './model/userModel';
+import {defHttp} from '/@/utils/http/axios';
+import {LoginParams, LoginResultModel, GetUserInfoModel, RoleListGetResultModel} from './model/userModel';
 
-import { ErrorMessageMode } from '/#/axios';
+import {ErrorMessageMode} from '/#/axios';
 
 enum Api {
-  Login = '/login',
-  SmsLogin = '/loginSms',
-  Logout = '/logout',
-  GetUserInfo = '/user/getUserInfo',
-  GetPermCode = '/user/getPermCode',
-  RetrievePassword = '/user/retrievePassword',
-  TestRetry = '/testRetry',
+    Base = '/user',
+    Login = '/login',
+    SmsLogin = '/loginSms',
+    Logout = '/logout',
+    RetrievePassword = '/retrievePassword',
+    GetUserInfo = '/user/getUserInfo',
+    GetPermCode = '/user/getPermCode',
+    TestRetry = '/testRetry',
+    AllRole = '/role/all',
+    Register = '/register'
+
 
 }
 
@@ -30,29 +34,29 @@ const publicKey =
  * @param str 密文
  */
 export function encryptedStr(str): string {
-  const encrypt = new JSEncrypt()
-  encrypt.setPublicKey(`-----BEGIN PUBLIC KEY-----${publicKey}-----END PUBLIC KEY-----`)
-  const data = encrypt.encrypt(str)
-  if (!data) {
-    return ''
-  }
-  return data
+    const encrypt = new JSEncrypt()
+    encrypt.setPublicKey(`-----BEGIN PUBLIC KEY-----${publicKey}-----END PUBLIC KEY-----`)
+    const data = encrypt.encrypt(str)
+    if (!data) {
+        return ''
+    }
+    return data
 }
 
 /**
  * @description: user login api
  */
 export function loginApi(params: LoginParams, mode: ErrorMessageMode = 'modal') {
-  params['password'] = encryptedStr(params['password'])
-  return defHttp.post<LoginResultModel>(
-    {
-      url: Api.Login,
-      params,
-    },
-    {
-      errorMessageMode: mode,
-    },
-  );
+    params['password'] = encryptedStr(params['password'])
+    return defHttp.post<LoginResultModel>(
+        {
+            url: Api.Login,
+            params,
+        },
+        {
+            errorMessageMode: mode,
+        },
+    );
 }
 
 /**
@@ -61,51 +65,130 @@ export function loginApi(params: LoginParams, mode: ErrorMessageMode = 'modal') 
  * @constructor
  */
 export function loginSms(params: any) {
-  return defHttp.post<LoginResultModel>(
-    {
-      url: Api.SmsLogin,
-      params,
-    }
-  );
+    return defHttp.post<LoginResultModel>(
+        {
+            url: Api.SmsLogin,
+            params,
+        }
+    );
 }
 
 /**
  * @description: retrievePassword
  * @param params 找回密码参数
  */
-export function retrievePassword(params:any){
-return defHttp.post(
-    {
-      url: Api.RetrievePassword,
-      params,
-    }
-  );
+export function retrievePassword(params: any) {
+    return defHttp.put(
+        {
+            url: Api.RetrievePassword,
+            params,
+        }
+    );
 }
+
+/**
+ * @description: register
+ * @param params 注册参数
+ */
+export function register(params: any) {
+    return defHttp.put(
+        {
+            url: Api.Register,
+            params,
+        }
+    );
+}
+
+
+/**
+ * 判断字段是否在使用
+ * @param field 字段
+ * @param value 数据
+ * @param id id
+ */
+export function checkFieldExist(field, value, id) {
+    return defHttp.get<boolean>({ url: Api.Base + '/checkFieldExist/' + field + '/' + value, params: { id: id } })
+}
+
 
 /**
  * @description: getUserInfo
  */
 export function getUserInfo() {
-  return defHttp.get<GetUserInfoModel>({ url: Api.GetUserInfo }, { errorMessageMode: 'none' });
+    return defHttp.get<GetUserInfoModel>({url: Api.GetUserInfo}, {errorMessageMode: 'none'});
 }
 
 export function getPermCode() {
-  return defHttp.get<string[]>({ url: Api.GetPermCode });
+    return defHttp.get<string[]>({url: Api.GetPermCode});
 }
 
 export function doLogout() {
-  return defHttp.get({ url: Api.Logout });
+    return defHttp.get({url: Api.Logout});
 }
 
+/**
+ * 获取系统所有角色列表
+ */
+export function getAllRoleList() {
+    return defHttp.get<RoleListGetResultModel>({ url: Api.AllRole })
+}
+
+/**
+ * 获取用户列表
+ */
+export const list = (params: ListParam) => {
+    return defHttp.get<UserListGetResultModel>({ url: Api.Base, params })
+}
+/**
+ * 导出列表
+ * @param params
+ */
+export function exportList(params?: object) {
+    return defHttp.request(
+        { url: Api.Base+'/download', params: params, method: 'get', responseType: 'blob' },
+        { isReturnNativeResponse: true },
+    )
+}
+/**
+ * 删除用户
+ * @param ids
+ */
+export const del = (ids?:object) => {
+    return defHttp.delete<boolean>({ url: Api.Base, params: ids })
+}
+/**
+ * 添加一个用户
+ * @param user
+ */
+export const add = (user?: object) => {
+    return defHttp.post({ url: Api.Base, params: user })
+}
+
+/**
+ * 编辑一个用户
+ * @param user
+ */
+export const edit = (user?: object) => {
+    return defHttp.put({ url: Api.Base, params: user })
+}
+/**
+ * 编辑当前登录用户的基本信息
+ * @param user 用户
+ */
+export const editLogin = (user?: object) => {
+    return defHttp.put({ url: Api.Base+'/editLogin', params: user })
+}
+
+
 export function testRetry() {
-  return defHttp.get(
-    { url: Api.TestRetry },
-    {
-      retryRequest: {
-        isOpenRetry: true,
-        count: 5,
-        waitTime: 1000,
-      },
-    },
-  );
+    return defHttp.get(
+        {url: Api.TestRetry},
+        {
+            retryRequest: {
+                isOpenRetry: true,
+                count: 5,
+                waitTime: 1000,
+            },
+        },
+    );
 }

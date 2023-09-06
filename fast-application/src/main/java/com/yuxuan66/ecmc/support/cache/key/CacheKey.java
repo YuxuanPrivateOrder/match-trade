@@ -9,7 +9,7 @@ import com.yuxuan66.ecmc.support.cache.key.modules.*;
  * @author Sir丶雨轩
  * @since 2022/9/13
  */
-public interface CacheKey extends UploadCacheKey, AliyunCacheKey, WebCacheKey, MailCacheKey, SmsCacheKey,CaptchaCacheKey {
+public interface CacheKey extends UploadCacheKey, AliyunCacheKey, WebCacheKey, MailCacheKey, SmsCacheKey,CaptchaCacheKey,DefaultCacheKey {
 
 
     /**

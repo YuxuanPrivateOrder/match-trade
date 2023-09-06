@@ -52,18 +52,18 @@
 <script lang="ts" setup>
   import { reactive, ref, computed, unref } from 'vue';
   import LoginFormTitle from './LoginFormTitle.vue';
-  import { Form, Input, Button } from 'ant-design-vue';
+  import {Form, Input, Button, notification} from 'ant-design-vue';
   import { CountdownInput } from '/@/components/CountDown';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import { useLoginState, useFormRules, LoginStateEnum } from './useLogin';
+  import {useLoginState, useFormRules, LoginStateEnum, useFormValid} from './useLogin';
   import {StrengthMeter} from "@/components/StrengthMeter";
   import {imgCaptcha, smsChangePassword} from "@/api/sys/captcha";
+  import {retrievePassword} from "@/api/sys/user";
 
   const FormItem = Form.Item;
   const InputPassword = Input.Password;
   const { t } = useI18n();
   const { handleBackLogin, getLoginState } = useLoginState();
-  const { getFormRules } = useFormRules();
 
   const formRef = ref();
   const loading = ref(false);
@@ -76,6 +76,8 @@
     confirmPassword: '',
     imgCode: ''
   });
+  const { validForm } = useFormValid(formRef);
+  const { getFormRules } = useFormRules(formData);
   function doImgCaptcha(){
     imgCaptcha().then((res)=>{
       uuid.value = res.uuid
@@ -100,14 +102,27 @@
   async function handleReset() {
     const form = unref(formRef);
     if (!form) return;
-    const data = await form.validate();
+    const data = await validForm();
 
     if (!data) return;
     loading.value = true;
-    setTimeout(() => {
+    retrievePassword({
+      smsCode: data.sms,
+      phone: data.mobile,
+      newPassword: data.password,
+      uuid: uuid.value,
+      imgCode: data.imgCode
+    }).then(() => {
+      // 提示密码重置成功
+      notification.success({
+        message: '密码重置成功',
+        description: '请使用新密码登录'
+      });
+      handleBackLogin();
+    }).finally(() => {
+      doImgCaptcha()
       loading.value = false;
-      alert(1)
-    }, 2000);
+    });
 
   }
 </script>

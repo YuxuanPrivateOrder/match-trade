@@ -1,3 +1,5 @@
+import {BasicFetchResult} from "@/api/model/baseModel";
+
 /**
  * @description: Login interface parameters
  */
@@ -36,3 +38,29 @@ export interface GetUserInfoModel {
   // 介绍
   desc?: string;
 }
+
+/**
+ * 角色列表返回值
+ */
+export interface RoleListItem{
+
+}
+
+/**
+ * 用户列表查询参数
+ */
+export interface AccountListItem {
+  id: string;
+  account: string;
+  email: string;
+  nickname: string;
+  role: number;
+  createTime: string;
+  remark: string;
+  status: number;
+}
+
+
+export type UserListGetResultModel = BasicFetchResult<AccountListItem>;
+
+export type RoleListGetResultModel = BasicFetchResult<RoleListItem>

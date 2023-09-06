@@ -1,8 +1,9 @@
-import type { FormInstance} from 'ant-design-vue/lib/form/Form';
+import type {FormInstance} from 'ant-design-vue/lib/form/Form';
 import type {RuleObject, NamePath} from 'ant-design-vue/lib/form/interface';
 import {ref, computed, unref, Ref} from 'vue';
 import {useI18n} from '/@/hooks/web/useI18n';
-import { isPhone } from "@/utils/is";
+import {isPhone} from "@/utils/is";
+import {checkFieldExist} from "@/api/sys/user";
 
 export enum LoginStateEnum {
     LOGIN,
@@ -104,7 +105,19 @@ export function useFormRules(formData?: Recordable) {
             // register form rules
             case LoginStateEnum.REGISTER:
                 return {
-                    account: accountFormRule,
+                    account: [
+                        {
+                            validator(_, value) {
+                                return new Promise((resolve, reject) => {
+                                    if (!value) {
+                                        reject('请输入账号')
+                                        return
+                                    }
+                                    checkFieldExist('username', value).then(r => !r ? resolve('') : reject('账号已存在'));
+                                })
+                            },
+                        }
+                    ],
                     password: passwordFormRule,
                     confirmPassword: [
                         {validator: validateConfirmPassword(formData?.password), trigger: 'change'},

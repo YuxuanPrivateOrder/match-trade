@@ -1,5 +1,6 @@
 package com.yuxuan66.ecmc.modules.system.rest;
 
+import cn.dev33.satoken.annotation.SaIgnore;
 import cn.hutool.core.map.MapUtil;
 import com.yuxuan66.ecmc.modules.system.entity.User;
 import com.yuxuan66.ecmc.modules.system.entity.dto.LoginDto;
@@ -70,6 +71,7 @@ public class UserController extends BaseController<UserService> {
      * @param id    id
      * @return 是否使用
      */
+    @SaIgnore
     @GetMapping(path = "/checkFieldExist/{field}/{value}")
     public Rs checkFieldExist(@PathVariable String field,@PathVariable String value, Long id) {
         return Rs.ok(baseService.checkFieldExist(field,value,id));
@@ -92,17 +94,6 @@ public class UserController extends BaseController<UserService> {
     @PutMapping
     public Rs edit(@RequestBody User user){
         baseService.edit(user);
-        return Rs.ok();
-    }
-
-    /**
-     * 通过手机验证码找回密码
-     * @param updatePasswordDto 找回密码dto
-     * @return 是否成功
-     */
-    @PutMapping(path = "/retrievePassword")
-    public Rs retrievePassword(@RequestBody UpdatePasswordDto updatePasswordDto){
-        baseService.retrievePassword(updatePasswordDto);
         return Rs.ok();
     }
 

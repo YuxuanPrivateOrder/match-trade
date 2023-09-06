@@ -27,6 +27,16 @@
           :placeholder="t('sys.login.smsCode')"
         />
       </FormItem>
+      <FormItem name="imgCode" class="enter-x">
+        <a-input v-bind="$attrs"  v-model:value="formData.imgCode" size="large" placeholder="图片验证码" >
+          <template #addonAfter>
+            <img :src="captcha"  style="cursor: pointer" @click="doImgCaptcha" width="140" height="38" alt="图片验证码" >
+          </template>
+          <template #[item]="data" v-for="item in Object.keys($slots).filter((k) => k !== 'addonAfter')">
+            <slot :name="item" v-bind="data || {}"></slot>
+          </template>
+        </a-input>
+      </FormItem>
       <FormItem name="password" class="enter-x">
         <StrengthMeter
           size="large"
@@ -69,12 +79,13 @@
 <script lang="ts" setup>
   import { reactive, ref, unref, computed } from 'vue';
   import LoginFormTitle from './LoginFormTitle.vue';
-  import { Form, Input, Button, Checkbox } from 'ant-design-vue';
+  import {Form, Input, Button, Checkbox, notification} from 'ant-design-vue';
   import { StrengthMeter } from '/@/components/StrengthMeter';
   import { CountdownInput } from '/@/components/CountDown';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useLoginState, useFormRules, useFormValid, LoginStateEnum } from './useLogin';
   import {imgCaptcha, smsRegister} from "@/api/sys/captcha";
+  import {register, retrievePassword} from "@/api/sys/user";
 
   const FormItem = Form.Item;
   const InputPassword = Input.Password;
@@ -110,9 +121,9 @@
   doImgCaptcha()
 
   async function sendCode() {
-    const data = await unref(formRef).validateFields('mobile')
+    const data = await unref(formRef).validateFields(['mobile','imgCode'])
     if (data){
-      await smsRegister(data.mobile)
+      await smsRegister(data.mobile, uuid.value, formData.imgCode)
       return true
     }
     return false
@@ -121,5 +132,23 @@
     const data = await validForm();
     if (!data) return;
     console.log(data);
+    register({
+      smsCode: data.sms,
+      phone: data.mobile,
+      uuid: uuid.value,
+      imgCode: data.imgCode,
+      account: data.account,
+      password: data.password
+    }).then(() => {
+      // 提示密码重置成功
+      notification.success({
+        message: '用户注册成功',
+        description: '请使用账号信息登陆'
+      });
+      handleBackLogin();
+    }).finally(() => {
+      doImgCaptcha()
+      loading.value = false;
+    });
   }
 </script>
