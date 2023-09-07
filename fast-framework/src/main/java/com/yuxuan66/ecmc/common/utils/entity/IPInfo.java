@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * IP信息实体类
+ *
  * @author Sir丶雨轩
  * @since 2023/9/7
  */

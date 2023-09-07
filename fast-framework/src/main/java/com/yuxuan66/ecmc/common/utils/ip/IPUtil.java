@@ -21,7 +21,7 @@ public class IPUtil {
     static {
         byte[] cBuff = new byte[0];
 
-        String dbPath = "/Users/yuxuan/Develop/Java/fast-admin/fast-framework/src/main/resources/ip2region/ip2region.xdb";
+        String dbPath = "src/main/resources/ip2region/ip2region.xdb";
         try {
             cBuff = Searcher.loadContentFromFile(dbPath);
         } catch (Exception e) {
