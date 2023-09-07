@@ -20,7 +20,7 @@
 
   import { defineComponent, computed, unref } from 'vue';
   import { Dropdown } from '/@/components/Dropdown/index';
-  import Icon from '@/components/Icon/Icon.vue';
+  import Icon from '@/components/Icon/index';
 
   import { TabContentProps } from '../types';
 

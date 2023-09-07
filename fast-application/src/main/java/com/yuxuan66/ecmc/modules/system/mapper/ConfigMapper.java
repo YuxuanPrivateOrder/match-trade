@@ -9,6 +9,5 @@ import org.apache.ibatis.annotations.Mapper;
  * @author Sir丶雨轩
  * @since 2023/9/4
  */
-@Mapper
 public interface ConfigMapper extends BaseMapper<Config> {
 }

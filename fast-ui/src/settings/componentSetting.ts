@@ -11,7 +11,7 @@ export default {
       // The field name of the current page passed to the background
       pageField: 'page',
       // The number field name of each page displayed in the background
-      sizeField: 'pageSize',
+      sizeField: 'size',
       // Field name of the form data returned by the interface
       listField: 'items',
       // Total number of tables returned by the interface field name
@@ -22,7 +22,7 @@ export default {
     // Default display quantity on one page
     defaultPageSize: 50,
     // Default Size
-    defaultSize: 'middle',
+    defaultSize: 'small',
     // Custom general sort function
     defaultSortFn: (sortInfo: SorterResult) => {
       const { field, order } = sortInfo;

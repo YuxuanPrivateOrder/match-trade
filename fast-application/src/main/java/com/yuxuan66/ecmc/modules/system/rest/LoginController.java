@@ -3,7 +3,7 @@ package com.yuxuan66.ecmc.modules.system.rest;
 import cn.dev33.satoken.annotation.SaIgnore;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.map.MapUtil;
-import com.yuxuan66.ecmc.modules.system.entity.RegisterDto;
+import com.yuxuan66.ecmc.modules.system.entity.dto.RegisterDto;
 import com.yuxuan66.ecmc.modules.system.entity.dto.LoginDto;
 import com.yuxuan66.ecmc.modules.system.entity.dto.SmsLoginDto;
 import com.yuxuan66.ecmc.modules.system.entity.dto.UpdatePasswordDto;

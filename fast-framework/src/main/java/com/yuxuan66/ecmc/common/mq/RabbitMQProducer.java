@@ -1,6 +1,7 @@
 package com.yuxuan66.ecmc.common.mq;
 
 import cn.hutool.extra.spring.SpringUtil;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 /**
@@ -15,7 +16,8 @@ public class RabbitMQProducer {
      * @param queueName 目标队列或交换机的名称
      * @param message   要发送的消息内容
      */
-    public static void sendMessage(String queueName, String message) {
-        SpringUtil.getBean(RabbitTemplate.class).convertAndSend(queueName, message);
+    public static void sendMessage(String queueName, Object message) {
+        SpringUtil.getBean(RabbitTemplate.class).convertAndSend(queueName, JSONObject.toJSONString(message));
     }
+
 }

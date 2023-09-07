@@ -31,12 +31,35 @@
         <sa-token.version>1.33.0</sa-token.version>
         <fastjson.version>1.2.80</fastjson.version>
         <poi.version>4.1.2</poi.version>
+        <aliyun.core.version>4.6.3</aliyun.core.version>
+        <aliyun.oss.version>3.16.0</aliyun.oss.version>
         <alibabacloud-dysmsapi20170525.version>2.0.24</alibabacloud-dysmsapi20170525.version>
         <captcha-spring-boot-starter.version>2.2.3</captcha-spring-boot-starter.version>
+        <ip2region.version>2.7.0</ip2region.version>
+        <cglib.version>3.2.9</cglib.version>
+        <asm.version>9.2</asm.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <!-- ASM -->
+            <dependency>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm</artifactId>
+                <version>${asm.version}</version>
+            </dependency>
+            <!-- Cglib -->
+            <dependency>
+                <groupId>cglib</groupId>
+                <artifactId>cglib</artifactId>
+                <version>${cglib.version}</version>
+            </dependency>
+            <!-- IP -->
+            <dependency>
+                <groupId>org.lionsoul</groupId>
+                <artifactId>ip2region</artifactId>
+                <version>${ip2region.version}</version>
+            </dependency>
               <!-- 验证码框架 -->
             <dependency>
                 <groupId>com.pig4cloud.plugin</groupId>
@@ -48,6 +71,18 @@
                 <groupId>com.aliyun</groupId>
                 <artifactId>alibabacloud-dysmsapi20170525</artifactId>
                 <version>${alibabacloud-dysmsapi20170525.version}</version>
+            </dependency>
+            <!-- Aliyun OSS -->
+            <dependency>
+                <groupId>com.aliyun.oss</groupId>
+                <artifactId>aliyun-sdk-oss</artifactId>
+                <version>${aliyun.oss.version}</version>
+            </dependency>
+            <!-- Aliyun Core -->
+            <dependency>
+                <groupId>com.aliyun</groupId>
+                <artifactId>aliyun-java-sdk-core</artifactId>
+                <version>${aliyun.core.version}</version>
             </dependency>
             <!-- 动态Mapper生成 -->
             <dependency>

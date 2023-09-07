@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.aliyun.sdk.service.dysmsapi20170525.models.SendSmsResponse;
 import com.yuxuan66.ecmc.common.mq.RabbitMQProducer;
 import com.yuxuan66.ecmc.common.sms.log.entity.SmsSendLog;
+import com.yuxuan66.ecmc.consts.QueueConst;
 
 /**
  * 短信发送器, 实现了短信日志记录功能
@@ -33,6 +34,6 @@ public abstract class SmsSender {
      */
     protected void logSmsSentRecord(String resp, String phone, String message, String signName, String template, String operator, String implClassName,String scene) {
         // 记录短信发送记录
-        RabbitMQProducer.sendMessage(SmsConst.SMS_LOG_QUEUE, JSONObject.toJSONString(new SmsSendLog(resp, phone, message, signName, template, operator, implClassName,scene)));
+        RabbitMQProducer.sendMessage(QueueConst.LOG_SMS_SEND, JSONObject.toJSONString(new SmsSendLog(resp, phone, message, signName, template, operator, implClassName,scene)));
     }
 }

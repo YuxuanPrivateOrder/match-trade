@@ -372,7 +372,7 @@
               labelCol={labelCol}
               wrapperCol={wrapperCol}
             >
-              <div style="display:flex">
+              <div style="display:flex; margin-right: 10px">
                 <div style="flex:1;">{getContent()}</div>
                 {showSuffix && <span class="suffix">{getSuffix}</span>}
               </div>

@@ -4,8 +4,10 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.TimeInterval;
 import cn.hutool.extra.spring.SpringUtil;
 import com.yuxuan66.ecmc.cache.redis.RedisKit;
+import com.yuxuan66.ecmc.common.upload.mapper.AttachMapper;
 import com.yuxuan66.ecmc.modules.system.mapper.ConfigMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -28,6 +30,10 @@ public class StaticComp {
      * 系统配置操作mapper
      */
     public static ConfigMapper configMapper;
+    /**
+     * 附件操作mapper
+     */
+    public static AttachMapper attachMapper;
 
     /**
      * 处理系统内的全局静态组件
@@ -40,7 +46,8 @@ public class StaticComp {
         log.info("redisKit[{}] init success...", redisKit.toString());
         configMapper = SpringUtil.getBean(ConfigMapper.class);
         log.info("configMapper[{}] init success...", configMapper.toString());
-
+        attachMapper = SpringUtil.getBean(AttachMapper.class);
+        log.info("attachMapper[{}] init success...", attachMapper.toString());
         log.info("全局静态组件初始化完成, 耗时：{}",timer.intervalPretty());
     }
 }

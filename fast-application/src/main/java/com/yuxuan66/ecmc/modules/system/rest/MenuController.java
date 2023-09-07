@@ -6,6 +6,7 @@ import com.yuxuan66.ecmc.support.base.BaseController;
 import com.yuxuan66.ecmc.support.base.resp.Rs;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Set;
 
 
@@ -60,7 +61,7 @@ public class MenuController extends BaseController<MenuService> {
      * @param ids 菜单id列表
      */
     @DeleteMapping
-    public Rs del(@RequestBody Set<Long> ids){
+    public Rs del(@RequestBody List<Long> ids){
         baseService.del(ids);
         return Rs.ok();
     }

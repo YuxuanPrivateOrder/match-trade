@@ -17,6 +17,11 @@
           icon="ion:document-text-outline"
           v-if="getShowDoc"
         />
+        <MenuItem
+            key="info"
+            text="个人资料"
+            icon="ion:person-outline"
+        />
         <MenuDivider v-if="getShowDoc" />
         <MenuItem
           v-if="getUseLockPage"

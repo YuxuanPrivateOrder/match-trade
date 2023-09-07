@@ -15,8 +15,10 @@ import com.yuxuan66.ecmc.modules.system.mapper.UserMapper;
 import com.yuxuan66.ecmc.support.base.BaseService;
 import io.undertow.client.ClientConnection;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -25,6 +27,7 @@ import java.util.Set;
  * @since 2022/12/9
  */
 @Service
+@Transactional
 public class MenuService extends BaseService<Menu, MenuMapper> {
 
     @Resource
@@ -58,10 +61,34 @@ public class MenuService extends BaseService<Menu, MenuMapper> {
 
     /**
      * 批量删除菜单
-     * @param ids 菜单id
+     * @param menuIds 菜单id
      */
-    public void del(Set<Long> ids){
-        removeBatchByIds(ids);
-        rolesMenusMapper.delete(new QueryWrapper<RolesMenus>().in("menu_id",ids));
+    public void del(List<Long> menuIds){
+        // 1. 创建一个集合来存储需要删除的菜单ID及其子菜单ID
+        Set<Long> menuAndChildIds = new HashSet<>(menuIds);
+
+        // 2. 递归查找子菜单ID并添加到集合中
+        findChildIds(menuIds, menuAndChildIds);
+
+        // 3. 删除菜单及其子菜单
+        removeBatchByIds(menuAndChildIds);
+
+        // 4. 删除角色对应的菜单
+        rolesMenusMapper.delete(new QueryWrapper<RolesMenus>().in("menu_id", menuIds));
+    }
+
+    /**
+     * 递归查找子菜单ID并添加到集合中
+     * @param menuIds 菜单ID
+     * @param menuAndChildIds 菜单ID及其子菜单ID
+     */
+    private void findChildIds(List<Long> menuIds, Set<Long> menuAndChildIds) {
+        for (Long menuId : menuIds) {
+            List<Long> childIds = query().eq("pid", menuId).list().stream().map(Menu::getId).toList();
+            if (!childIds.isEmpty()) {
+                menuAndChildIds.addAll(childIds);
+                findChildIds(childIds, menuAndChildIds);
+            }
+        }
     }
 }

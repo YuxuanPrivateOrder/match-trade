@@ -11,10 +11,7 @@ import com.yuxuan66.ecmc.common.utils.StpUtil;
 import com.yuxuan66.ecmc.config.RsaProperties;
 import com.yuxuan66.ecmc.modules.system.entity.*;
 import com.yuxuan66.ecmc.modules.system.entity.consts.UserStatus;
-import com.yuxuan66.ecmc.modules.system.entity.dto.LoginDto;
-import com.yuxuan66.ecmc.modules.system.entity.dto.SmsLoginDto;
-import com.yuxuan66.ecmc.modules.system.entity.dto.UpdatePasswordDto;
-import com.yuxuan66.ecmc.modules.system.entity.dto.UserInfoDto;
+import com.yuxuan66.ecmc.modules.system.entity.dto.*;
 import com.yuxuan66.ecmc.modules.system.entity.query.UserQuery;
 import com.yuxuan66.ecmc.modules.system.mapper.RoleMapper;
 import com.yuxuan66.ecmc.modules.system.mapper.UserMapper;
@@ -24,8 +21,9 @@ import com.yuxuan66.ecmc.support.base.resp.Ps;
 import com.yuxuan66.ecmc.support.cache.ConfigKit;
 import com.yuxuan66.ecmc.support.cache.key.CacheKey;
 import com.yuxuan66.ecmc.support.exception.BizException;
+import com.yuxuan66.ecmc.support.log.annotation.LogLogin;
+import com.yuxuan66.ecmc.support.log.enums.LoginMethod;
 import lombok.RequiredArgsConstructor;
-import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,6 +71,7 @@ public class UserService extends BaseService<User, UserMapper> {
      * @param loginDto 登录信息
      * @return token
      */
+    @LogLogin
     public String login(LoginDto loginDto) {
 
         User user = query().eq("username", loginDto.getUsername()).one();
@@ -94,6 +93,7 @@ public class UserService extends BaseService<User, UserMapper> {
      * @param smsLoginDto 登陆信息
      * @return 标准返回
      */
+    @LogLogin(LoginMethod.PHONE)
     public String login(SmsLoginDto smsLoginDto) {
         // 判断图片验证码
         captchaService.checkImgCaptcha(smsLoginDto);

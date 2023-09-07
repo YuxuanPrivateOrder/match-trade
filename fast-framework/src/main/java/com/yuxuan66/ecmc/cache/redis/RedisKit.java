@@ -1,6 +1,7 @@
 package com.yuxuan66.ecmc.cache.redis;
 
 import cn.hutool.core.util.StrUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,7 @@ import java.util.concurrent.TimeUnit;
  * @author Sir丶雨轩
  * @since 2022/9/8
  */
+@Slf4j
 @Component
 public class RedisKit {
 
@@ -71,6 +73,7 @@ public class RedisKit {
         }
         return StrUtil.EMPTY;
     }
+
     /**
      * 从缓存中获取字符串数据后删除
      *
@@ -93,6 +96,21 @@ public class RedisKit {
     public String hGet(String key, String hKey) {
         if (hExist(key, hKey)) {
             return Objects.requireNonNull(redisTemplate.opsForHash().get(key, hKey)).toString();
+        }
+        return StrUtil.EMPTY;
+    }
+    /**
+     * 从缓存的hash对象中获取指定key的数据并删除
+     *
+     * @param key  缓存key
+     * @param hKey hashKey
+     * @return 数据
+     */
+    public String hGetAndDel(String key, String hKey) {
+        if (hExist(key, hKey)) {
+            String val = Objects.requireNonNull(redisTemplate.opsForHash().get(key, hKey)).toString();
+            hDel(key,hKey);
+            return val;
         }
         return StrUtil.EMPTY;
     }
@@ -132,6 +150,15 @@ public class RedisKit {
         redisTemplate.opsForHash().put(key, hKey, data);
     }
 
+    /**
+     * 删除hash中指定的key值
+     * @param key 缓存key
+     * @param hKey hash key
+     */
+    public void hDel(String key, String... hKey) {
+        redisTemplate.opsForHash().delete(key, hKey);
+    }
+
 
     /**
      * 指定缓存失效时间
@@ -147,7 +174,7 @@ public class RedisKit {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+           log.error("设置缓存失效时间失败",e);
         }
     }
 

@@ -10,6 +10,7 @@ import com.yuxuan66.ecmc.support.base.BaseQuery;
 import com.yuxuan66.ecmc.support.base.BaseService;
 import com.yuxuan66.ecmc.support.base.resp.Ps;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import java.util.Set;
  * @since 2022/12/9
  */
 @Service
+@Transactional
 public class RoleService extends BaseService<Role, RoleMapper> {
     @Resource
     private RolesMenusMapper rolesMenusMapper;
