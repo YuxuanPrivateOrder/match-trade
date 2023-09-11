@@ -3,6 +3,7 @@ package com.yuxuan66.ecmc.common.utils;
 
 import cn.dev33.satoken.exception.SaTokenException;
 import cn.dev33.satoken.stp.StpLogic;
+import cn.hutool.core.convert.Convert;
 import com.yuxuan66.ecmc.support.base.BaseEntity;
 
 /**
@@ -15,6 +16,23 @@ public class StpUtil {
      * 底层的 STP_LOGIC 对象
      */
     private static final StpLogic STP_LOGIC = cn.dev33.satoken.stp.StpUtil.getStpLogic();
+
+
+    /**
+     * 获取指定Token对应的账号id，如果未登录，则返回 null
+     * @param tokenValue token
+     * @return 账号id
+     */
+    public static Long getLoginId(String tokenValue){
+        return Convert.toLong(STP_LOGIC.getLoginIdByToken(tokenValue));
+    }
+    /**
+     * 获取当前会话账号id, 如果未登录，则抛出异常
+     * @return 账号id
+     */
+    public static Long getLoginId( ){
+        return Convert.toLong(STP_LOGIC.getLoginId());
+    }
 
     /**
      * 会话登录并保存用户信息

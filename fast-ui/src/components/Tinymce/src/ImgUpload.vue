@@ -1,7 +1,7 @@
 <template>
   <div :class="[prefixCls, { fullscreen }]">
     <Upload
-      name="file"
+      name="files"
       multiple
       @change="handleChange"
       :action="uploadUrl"

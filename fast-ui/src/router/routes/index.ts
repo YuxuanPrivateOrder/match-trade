@@ -5,6 +5,7 @@ import { PAGE_NOT_FOUND_ROUTE, REDIRECT_ROUTE } from '/@/router/routes/basic';
 import { mainOutRoutes } from './mainOut';
 import { PageEnum } from '/@/enums/pageEnum';
 import { t } from '/@/hooks/web/useI18n';
+import {LAYOUT} from "@/router/constant";
 
 // import.meta.glob() 直接引入所有的模块 Vite 独有的功能
 const modules = import.meta.glob('./modules/**/*.ts', { eager: true });
@@ -37,7 +38,25 @@ export const LoginRoute: AppRouteRecordRaw = {
     title: t('routes.basic.login'),
   },
 };
-
+export const AccountSetting: AppRouteRecordRaw = {
+  path: '/account',
+  name: 'Account',
+  component: LAYOUT,
+  meta: {
+    title: '授权中',
+  },
+  children: [
+    {
+      path: 'setting',
+      name: 'Setting',
+      component: () => import('/@/views/sys/user/setting/index.vue'),
+      meta: {
+        title: '个人资料',
+        icon: 'simple-icons:about-dot-me',
+      },
+    },
+  ],
+}
 // Basic routing without permission
 // 未经许可的基本路由
 export const basicRoutes = [
@@ -46,4 +65,5 @@ export const basicRoutes = [
   ...mainOutRoutes,
   REDIRECT_ROUTE,
   PAGE_NOT_FOUND_ROUTE,
+  AccountSetting
 ];

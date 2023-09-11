@@ -1,5 +1,7 @@
 package com.yuxuan66.ecmc.common.upload;
 
+import cn.hutool.core.convert.Convert;
+import cn.hutool.core.lang.Assert;
 import cn.hutool.extra.spring.SpringUtil;
 import com.yuxuan66.ecmc.common.upload.entity.Attach;
 import com.yuxuan66.ecmc.common.upload.enums.UploadType;
@@ -29,7 +31,9 @@ public class UploadContext implements Upload {
      */
     @Override
     public Attach upload(byte[] fileBytes, String originalName, String md5) {
-        UploadType uploadType = UploadType.getByVal(ConfigKit.get(CacheKey.UPLOAD_TYPE, Integer.class));
+        String uploadTypeVal = ConfigKit.get(CacheKey.UPLOAD_TYPE);
+        Assert.notNull(uploadTypeVal,()->BizException.of("上传失败, 上传配置有误"));
+        UploadType uploadType = UploadType.getByVal(Convert.toInt(uploadTypeVal));
 
         if (uploadType == null) {
             throw new BizException("上传失败, 上传配置有误");

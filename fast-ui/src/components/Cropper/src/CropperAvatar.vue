@@ -23,6 +23,7 @@
     <CropperModal
       @register="register"
       @upload-success="handleUploadSuccess"
+      @upload-error="handleUploadError"
       :uploadApi="uploadApi"
       :src="sourceValue"
       :size="size"
@@ -98,6 +99,9 @@
         emit('change', { source, data });
         createMessage.success(t('component.cropper.uploadSuccess'));
       }
+      function handleUploadError(msg: string) {
+        createMessage.error(msg);
+      }
 
       expose({ openModal: openModal.bind(null, true), closeModal });
 
@@ -112,6 +116,7 @@
         getImageWrapperStyle,
         getStyle,
         handleUploadSuccess,
+        handleUploadError
       };
     },
   });

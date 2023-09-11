@@ -180,6 +180,10 @@ export const editLogin = (user?: object) => {
 }
 
 
+export function getLoginUser() {
+    return defHttp.get<GetUserInfoModel>({ url: Api.Base+'/getLoginUser' }, { errorMessageMode: 'none' })
+}
+
 export function testRetry() {
     return defHttp.get(
         {url: Api.TestRetry},

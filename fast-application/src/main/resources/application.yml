@@ -8,4 +8,5 @@ spring:
 
 # 是否启动演示模式，无法修改数据
 preview:
-  enabled: true
+  enabled: false
+

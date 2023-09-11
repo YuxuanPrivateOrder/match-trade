@@ -1,10 +1,7 @@
 package com.yuxuan66.ecmc.modules.system.rest;
 
 import cn.dev33.satoken.annotation.SaIgnore;
-import cn.hutool.core.map.MapUtil;
 import com.yuxuan66.ecmc.modules.system.entity.User;
-import com.yuxuan66.ecmc.modules.system.entity.dto.LoginDto;
-import com.yuxuan66.ecmc.modules.system.entity.dto.UpdatePasswordDto;
 import com.yuxuan66.ecmc.modules.system.entity.query.UserQuery;
 import com.yuxuan66.ecmc.modules.system.service.UserService;
 import com.yuxuan66.ecmc.support.base.BaseController;
@@ -12,8 +9,6 @@ import com.yuxuan66.ecmc.support.base.resp.Ps;
 import com.yuxuan66.ecmc.support.base.resp.Rs;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -104,6 +99,25 @@ public class UserController extends BaseController<UserService> {
     @DeleteMapping
     public Rs del(@RequestBody Set<Long> ids){
         baseService.del(ids);
+        return Rs.ok();
+    }
+
+    /**
+     * 获取当前登录的用户
+     * @return 用户
+     */
+    @GetMapping(path = "/getLoginUser")
+    public Rs getLoginUser(){
+        return Rs.ok(baseService.getLoginUser());
+    }
+
+    /**
+     * 编辑当前登录用户的基本信息
+     * @param user 用户
+     */
+    @PutMapping(path = "/editLogin")
+    public Rs editLogin(@RequestBody User user){
+        baseService.editLogin(user);
         return Rs.ok();
     }
 

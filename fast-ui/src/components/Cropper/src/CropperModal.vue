@@ -121,6 +121,7 @@
   import { dataURLtoBlob } from '/@/utils/file/base64Conver';
   import { isFunction } from '/@/utils/is';
   import { useI18n } from '/@/hooks/web/useI18n';
+  import {ResultEnum} from "@/enums/httpEnum";
 
   type apiFunParams = { file: Blob; name: string; filename: string };
 
@@ -191,7 +192,11 @@
           const blob = dataURLtoBlob(previewSource.value);
           try {
             setModalProps({ confirmLoading: true });
-            const result = await uploadApi({ name: 'file', file: blob, filename });
+            const result = await uploadApi({ name: 'files', file: blob, filename });
+            if(result.data.code == ResultEnum.ERROR){
+              emit('uploadError', result.data.message);
+              return;
+            }
             emit('uploadSuccess', { source: previewSource.value, data: result.url });
             closeModal();
           } finally {

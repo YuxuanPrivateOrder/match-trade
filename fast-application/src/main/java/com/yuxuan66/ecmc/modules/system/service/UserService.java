@@ -259,6 +259,27 @@ public class UserService extends BaseService<User, UserMapper> {
         }
     }
 
+
+    /**
+     * 获取当前登录的用户
+     * @return 用户
+     */
+    public User getLoginUser(){
+        User user = getById(StpUtil.getLoginId());
+        // 对手机号和邮箱进行*号处理
+        user.setPhone(user.getPhone().replaceAll("(\\d{3})\\d{4}(\\d{4})", "$1****$2"));
+        user.setEmail(user.getEmail().replaceAll("(\\w?)(\\w+)(\\w)(@\\w+\\.[a-z]+(\\.[a-z]+)?)", "$1****$3$4"));
+        return user;
+    }
+    /**
+     * 编辑当前登录用户的基本信息
+     * @param user 用户
+     */
+    public void editLogin(User user){
+        user.setId(StpUtil.getLoginId());
+        user.updateById();
+        StpUtil.login(getById(user.getId()));
+    }
     /**
      * 导出用户列表
      *
