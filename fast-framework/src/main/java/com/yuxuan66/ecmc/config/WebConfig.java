@@ -1,8 +1,10 @@
 package com.yuxuan66.ecmc.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yuxuan66.ecmc.support.interceptor.PreviewInterceptor;
 import com.yuxuan66.ecmc.support.satoken.interceptor.CustomSaInterceptor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -26,6 +28,13 @@ public class WebConfig implements WebMvcConfigurer {
     private final ObjectMapper objectMapper;
 
     /**
+     * 是否启动演示模式
+     */
+    @Value("${preview.enabled:false}")
+    private Boolean preview;
+
+
+    /**
      * 拦截器注册
      *
      * @param registry 拦截器注册中心
@@ -33,6 +42,8 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new CustomSaInterceptor());
+        // 演示模式拦截器
+        registry.addInterceptor(new PreviewInterceptor(preview));
     }
 
     /**

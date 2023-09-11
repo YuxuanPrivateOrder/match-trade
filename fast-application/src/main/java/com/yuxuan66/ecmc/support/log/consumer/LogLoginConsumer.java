@@ -53,7 +53,7 @@ public class LogLoginConsumer extends BaseService<LogLogin, LogLoginMapper> {
             User user = userMapper.selectById(userId);
             user.setLoginTime(Lang.getNowTimestamp());
             user.setLoginIp(loginMQDto.getLoginIp());
-            user.setLoginCity(loginCity);
+            user.setLoginCity(loginCity.contains("内网") ? "内网IP" : loginCity);
             user.updateById();
         } else {
             // 登陆失败获取尝试登陆的用户Id

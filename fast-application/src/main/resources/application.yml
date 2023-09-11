@@ -5,3 +5,7 @@ spring:
     include: db, app, mybatis, auth, logging, undertow, redis, mq
   mvc:
     throw-exception-if-no-handler-found: true
+
+# 是否启动演示模式，无法修改数据
+preview:
+  enabled: true
