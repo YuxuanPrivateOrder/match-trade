@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>fast-admin</artifactId>
+        <artifactId>ef-match-trade</artifactId>
         <groupId>com.yuxuan66</groupId>
         <version>0.0.1</version>
     </parent>
@@ -14,7 +14,7 @@
         <!-- Project Framework -->
         <dependency>
             <groupId>com.yuxuan66</groupId>
-            <artifactId>fast-framework</artifactId>
+            <artifactId>fast-match</artifactId>
         </dependency>
     </dependencies>
 

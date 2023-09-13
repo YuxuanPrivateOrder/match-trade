@@ -23,6 +23,24 @@ public class RedisKit {
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
+
+    /**
+     * 加锁
+     * @param key 锁的key
+     * @param time 锁的时间
+     */
+    public void lock(String key,Long time){
+        set(key,"ok",time);
+    }
+
+    /**
+     * 释放锁
+     * @param key 锁的key
+     */
+    public void unlock(String key){
+        del(key);
+    }
+
     /**
      * 判断一组key是否存在
      *

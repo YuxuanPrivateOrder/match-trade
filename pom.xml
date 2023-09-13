@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.yuxuan66</groupId>
-    <artifactId>fast-admin</artifactId>
+    <artifactId>ef-match-trade</artifactId>
     <packaging>pom</packaging>
     <version>0.0.1</version>
     <description>雨轩后台快速开发平台</description>
@@ -20,6 +20,7 @@
     <modules>
         <module>fast-framework</module>
         <module>fast-application</module>
+        <module>fast-match</module>
     </modules>
 
     <properties>
@@ -130,6 +131,11 @@
             <dependency>
                 <groupId>com.yuxuan66</groupId>
                 <artifactId>fast-framework</artifactId>
+                <version>${ecmc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.yuxuan66</groupId>
+                <artifactId>fast-match</artifactId>
                 <version>${ecmc.version}</version>
             </dependency>
         </dependencies>
