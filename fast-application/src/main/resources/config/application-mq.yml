@@ -1,6 +1,7 @@
 spring:
   rabbitmq:
     host: localhost           # RabbitMQ 服务器主机
-    port: 5672                # RabbitMQ 服务器端口
+    port: 5673              # RabbitMQ 服务器端口
     username: guest           # RabbitMQ 用户名
     password: guest           # RabbitMQ 密码
+    publisher-returns: true

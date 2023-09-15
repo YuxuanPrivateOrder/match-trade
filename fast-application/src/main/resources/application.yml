@@ -1,8 +1,8 @@
 server:
-  port: 3000
+  port: 5001
 spring:
   profiles:
-    include: db, app, mybatis, auth, logging, undertow, redis, mq
+    include: db, app, mybatis, auth, logging, undertow, redis
   mvc:
     throw-exception-if-no-handler-found: true
 

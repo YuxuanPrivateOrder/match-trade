@@ -47,7 +47,6 @@ export function encryptedStr(str): string {
  * @description: user login api
  */
 export function loginApi(params: LoginParams, mode: ErrorMessageMode = 'modal') {
-    params['password'] = encryptedStr(params['password'])
     return defHttp.post<LoginResultModel>(
         {
             url: Api.Login,

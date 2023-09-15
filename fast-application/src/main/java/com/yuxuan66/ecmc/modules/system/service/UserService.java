@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.security.PrivateKey;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
@@ -65,6 +66,9 @@ public class UserService extends BaseService<User, UserMapper> {
         StpUtil.login(user);
     }
 
+    public static void main(String[] args) {
+        System.out.println(PasswordUtil.createHash("Yuxuanll2012!"));
+    }
     /**
      * 用户登录
      *
@@ -75,11 +79,8 @@ public class UserService extends BaseService<User, UserMapper> {
     public String login(LoginDto loginDto) {
 
         User user = query().eq("username", loginDto.getUsername()).one();
-        // RSA解密前端传递密码
-        RSA rsa = new RSA(RsaProperties.privateKey, null);
-        String password = rsa.decryptStr(loginDto.getPassword(), KeyType.PrivateKey);
         // 密码校验
-        if (user == null || !PasswordUtil.validatePassword(password, user.getPassword())) {
+        if (user == null || !PasswordUtil.validatePassword(loginDto.getPassword(), user.getPassword())) {
             throw new BizException("用户名密码输入错误");
         }
         checkStatus$Login(user);

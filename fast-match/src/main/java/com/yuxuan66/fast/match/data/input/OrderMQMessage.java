@@ -2,12 +2,12 @@ package com.yuxuan66.fast.match.data.input;
 
 import com.alibaba.fastjson.JSONObject;
 import com.yuxuan66.fast.match.consts.MatchConst;
+import com.yuxuan66.fast.match.entity.dto.OkOrderResult;
 import com.yuxuan66.fast.match.entity.dto.Order;
 import com.yuxuan66.fast.match.enums.OrderType;
 import com.yuxuan66.fast.match.factory.MatchStrategyFactory;
 import com.yuxuan66.fast.match.service.match.AbstractOrderMatchService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 /**
@@ -23,7 +23,6 @@ public class OrderMQMessage {
      * 新订单
      * @param order 订单数据
      */
-    @RabbitListener(queues = MatchConst.INPUT_NEW_ORDER)
     public void newOrder(String orderStr) {
        try{
            log.debug("接收到新订单 {}",orderStr);
@@ -40,5 +39,13 @@ public class OrderMQMessage {
        }catch (Exception e){
            e.printStackTrace();
        }
+    }
+    public void okOrder(String orderStr) {
+        try{
+            log.debug("撮合成功订单 {}",orderStr);
+            OkOrderResult okOrderResult = JSONObject.parseObject(orderStr, OkOrderResult.class);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

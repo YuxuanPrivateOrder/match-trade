@@ -2,9 +2,9 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ef-match-trade?useSSL=false
-    username: root
-    password: root
+    url: jdbc:mysql://rm-2zev4220fqivojo40.mysql.rds.aliyuncs.com/gx_jys?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+    username: guoxin
+    password: guoxin666!
     ##  Hikari 连接池配置 ------ 详细配置请访问：https://github.com/brettwooldridge/HikariCP
     hikari:
       ## 最小空闲连接数量

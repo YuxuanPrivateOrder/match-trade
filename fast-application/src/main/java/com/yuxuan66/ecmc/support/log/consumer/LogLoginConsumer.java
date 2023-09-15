@@ -16,7 +16,6 @@ import com.yuxuan66.ecmc.modules.system.mapper.UserMapper;
 import com.yuxuan66.ecmc.support.base.BaseService;
 import com.yuxuan66.ecmc.support.log.entity.LoginMQDto;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -38,7 +37,6 @@ public class LogLoginConsumer extends BaseService<LogLogin, LogLoginMapper> {
      *
      * @param message 消息
      */
-    @RabbitListener(queues = QueueConst.LOG_LOGIN)
     public void processMessage(String message) {
         LoginMQDto loginMQDto = JSONObject.parseObject(message, LoginMQDto.class);
         Long userId = null;
